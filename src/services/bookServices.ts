@@ -8,7 +8,7 @@ import {
   createBookSchema,
   deleteBookSchema,
   updateBookSchema,
-} from "../validations/book-validation";
+} from "../schema/book-validation";
 
 interface Book extends Document {
   title: string;

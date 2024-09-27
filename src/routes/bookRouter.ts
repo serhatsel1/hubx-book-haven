@@ -4,7 +4,51 @@ import { BookController } from "../controllers/BookController";
 const bookRouter: Router = express.Router();
 
 /**
- * @openapi
+ * @swagger
+ * components:
+ *   schemas:
+ *     Author:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           example: "John Doe"
+ *         country:
+ *           type: string
+ *           example: "USA"
+ *         birthDate:
+ *           type: string
+ *           format: date
+ *           example: "1980-01-01"
+ *     Book:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "66f587fb9235e6937f482b5c"
+ *         title:
+ *           type: string
+ *           example: "serhat34"
+ *         author:
+ *           $ref: '#/components/schemas/Author'
+ *         price:
+ *           type: number
+ *           example: 10
+ *         isbn:
+ *           type: string
+ *           example: "978658822010"
+ *         language:
+ *           type: string
+ *           example: "tr"
+ *         numberOfPages:
+ *           type: number
+ *           example: 12
+ *         publisher:
+ *           type: string
+ *           example: "serhatyaınevleri"
+ */
+/**
+ * @swagger
  * /books:
  *   get:
  *     tags:
@@ -28,6 +72,12 @@ const bookRouter: Router = express.Router();
  *     responses:
  *       200:
  *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Book'
  *   post:
  *     tags:
  *       - Books
@@ -37,16 +87,9 @@ const bookRouter: Router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               author:
- *                 type: string
- *               isbn:
- *                 type: string
+ *             $ref: '#/components/schemas/Book'
  *     responses:
- *       200:
+ *       201:
  *         description: Book created successfully
  *         content:
  *           application/json:
@@ -59,7 +102,7 @@ bookRouter
   .post(BookController.createBook);
 
 /**
- * @openapi
+ * @swagger
  * /books/{id}:
  *   put:
  *     tags:
@@ -73,11 +116,27 @@ bookRouter
  *         schema:
  *           type: string
  *     requestBody:
- *       required: true
+ *       description: Book object with updated fields
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Book'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               author:
+ *                 $ref: '#/components/schemas/Author'
+ *               price:
+ *                 type: number
+ *                 format: float
+ *               isbn:
+ *                 type: string
+ *               language:
+ *                 type: string
+ *               numberOfPages:
+ *                 type: integer
+ *               publisher:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Book updated successfully
@@ -85,6 +144,8 @@ bookRouter
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Book'
+ *       404:
+ *         description: Book not
  *   delete:
  *     tags:
  *       - Books
