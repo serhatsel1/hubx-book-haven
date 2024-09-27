@@ -6,6 +6,9 @@ import {
   updateBookService,
   deleteBookService,
 } from "../services/bookServices";
+import CustomError from "../errors/CustomError";
+import { ErrorTypes } from "../types/ErrorTypes";
+import { BookBaseModel } from "../models/BookModel";
 
 // Define an interface for the expected book data shape
 interface BookData {
@@ -22,7 +25,17 @@ export class BookController {
   // Get all books
   static getAllBooks = expressAsyncHandler(
     async (req: Request, res: Response) => {
-      const response = await getAllBooksService(); // Assuming this service returns an array of books
+      const { page = "1", limit = "10" } = req.query as {
+        page?: string;
+        limit?: string;
+      };
+      const pageNumber = typeof page === "string" ? parseInt(page, 10) : page;
+      const limitNumber =
+        typeof limit === "string" ? parseInt(limit, 10) : limit;
+      const response = await getAllBooksService({
+        page: pageNumber,
+        limit: limitNumber,
+      });
       res.json(response);
     }
   );
@@ -66,7 +79,15 @@ export class BookController {
         numberOfPages,
         publisher,
       }: BookData = req.body;
-
+      if (isbn) {
+        const existingBook = await BookBaseModel.findOne({
+          isbn,
+          _id: { $ne: id },
+        });
+        if (existingBook) {
+          throw new CustomError(ErrorTypes.ClientErrors.DUPLICATE_VALUE);
+        }
+      }
       const response = await updateBookService({
         id,
         title,

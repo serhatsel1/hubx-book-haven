@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 
 import { indexRouter } from "./routes/indexRouter";
 
+import swaggerDocs from "./utils/swagger";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ DbConnection.once("connected", () => {
     console.log(
       `Server is running on port http://localhost:${process.env.PORT}`
     );
+    swaggerDocs(app, Number(port));
   });
 });
 

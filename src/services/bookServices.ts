@@ -3,13 +3,16 @@ import CustomError from "../errors/CustomError";
 import { ErrorTypes } from "../types/ErrorTypes";
 import isbnGenerator from "../utils/isbnGenerator";
 import { BookBaseModel as BookBase } from "../models/BookModel";
-
 import { AuthorBaseModel as AuthorBase } from "../models/AuthorModel";
+import {
+  createBookSchema,
+  deleteBookSchema,
+  updateBookSchema,
+} from "../validations/book-validation";
 
-// Define interfaces for your Book and Author models (adjust these based on your actual schema)
 interface Book extends Document {
   title: string;
-  author: string | Types.ObjectId; // Allow author to be either a string or an ObjectId
+  author: string | Types.ObjectId;
   price: number;
   isbn: string;
   language: string;
@@ -22,22 +25,38 @@ interface Author extends Document {
   country: string;
   birthDate: Date;
 }
-
+interface PaginationParams {
+  page: number; // Sayfa numarası
+  limit: number; // Her sayfadaki öğe sayısı
+}
 // Get all books service
-export const getAllBooksService = async () => {
-  const books: Book[] = await BookBase.find().populate("author");
-  return { success: true, data: books };
-};
+export const getAllBooksService = async ({
+  page = 1,
+  limit = 10,
+}: PaginationParams) => {
+  const booksCount = await BookBase.countDocuments(); // Toplam kitap sayısını al
+  const books = await BookBase.find()
+    .populate("author")
+    .skip((page - 1) * limit) // Atlanan kayıt sayısı
+    .limit(limit); // Her sayfadaki kayıt sayısı
 
-// Interface for createBookService input
+  return {
+    success: true,
+    data: books,
+    totalBooks: booksCount, // Toplam kitap sayısı
+    totalPages: Math.ceil(booksCount / limit), // Toplam sayfa sayısı
+    currentPage: page, // Mevcut sayfa numarası
+  };
+};
+// Create a new book service
 interface CreateBookInput {
   title: string;
-  author: { name: string; country: string; birthDate: string }; // Adjust based on your author input structure
+  author: { name: string; country: string; birthDate: string };
   price: number;
   language: string;
   numberOfPages: number;
   publisher: string;
-  isbn: string;
+  isbn?: string;
 }
 
 // Create a new book service
@@ -49,6 +68,20 @@ export const createBookService = async ({
   numberOfPages,
   publisher,
 }: CreateBookInput) => {
+  // Joi validasyonunu kullanıyoruz
+  const { error } = createBookSchema.validate({
+    title,
+    author,
+    price,
+    language,
+    numberOfPages,
+    publisher,
+  });
+  if (error) {
+    console.error("errors", error);
+    throw new CustomError(ErrorTypes.ClientErrors.VALIDATION_ERROR);
+  }
+
   const authorProfile: Author = new AuthorBase({
     name: author.name,
     country: author.country,
@@ -58,7 +91,7 @@ export const createBookService = async ({
 
   const book: Book = new BookBase({
     title,
-    author: authorProfile._id, // Assuming you're storing the author's ObjectId in the book
+    author: authorProfile._id, // Author'un ObjectId'sini kaydediyoruz
     price,
     isbn: isbnGenerator.generateISBN13(),
     language,
@@ -66,27 +99,15 @@ export const createBookService = async ({
     publisher,
   });
 
-  // Optional: Check for duplicate title (uncomment if needed)
-  // if (title === (await BookBase.findOne({ title })).title) {
-  //   throw new CustomError({
-  //     status: 400,
-  //     message: "ErrorTypes.ClientErrors.DUPLICATE_VALUE",
-  //   });
-  // }
-
-  if (price < 0) {
-    throw new CustomError(ErrorTypes.ClientErrors.NEGATIVE_VALUE);
-  }
-
   await book.save();
   return { success: true, data: book };
 };
 
-// Interface for updateBookService input
+// Update an existing book service
 interface UpdateBookInput {
-  id: string; // Or the appropriate type for your book ID
+  id: string;
   title?: string;
-  author?: { name: string; country: string; birthDate: string }; // Adjust if needed
+  author?: { name: string; country: string; birthDate: string };
   price?: number;
   isbn?: string;
   language?: string;
@@ -105,6 +126,22 @@ export const updateBookService = async ({
   numberOfPages,
   publisher,
 }: UpdateBookInput) => {
+  // Joi validasyonunu kullanıyoruz
+  const { error } = updateBookSchema.validate({
+    id,
+    title,
+    author,
+    price,
+    isbn,
+    language,
+    numberOfPages,
+    publisher,
+  });
+  if (error) {
+    console.error("errors", error);
+    throw new CustomError(ErrorTypes.ClientErrors.VALIDATION_ERROR);
+  }
+
   const book: Book | null = await BookBase.findOneAndUpdate(
     { _id: id },
     { title, author, price, isbn, language, numberOfPages, publisher },
@@ -121,6 +158,13 @@ interface DeleteBookInput {
 
 // Delete a book service
 export const deleteBookService = async ({ id }: DeleteBookInput) => {
+  // Joi validasyonunu kullanıyoruz
+  const { error } = deleteBookSchema.validate({ id });
+  if (error) {
+    console.error("errors", error);
+    throw new CustomError(ErrorTypes.ClientErrors.VALIDATION_ERROR);
+  }
+
   const book: Book | null = await BookBase.findOneAndDelete({ _id: id });
   return { success: true, data: book };
 };
