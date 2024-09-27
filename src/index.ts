@@ -4,6 +4,9 @@ import DbConnection from "./db/DbConnection";
 import cors from "cors";
 import bodyParser from "body-parser";
 
+import { indexRouter } from "./routes/indexRouter";
+
+
 dotenv.config();
 
 const app = express();
@@ -18,9 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(urlencoded({ extended: true }));
 app.use(json());
 
-app.use("/", (req, res) => {
-  res.status(200).json({ msg: "Server is up and running" });
-});
+app.use(indexRouter);
 
 DbConnection.once("connected", () => {
   console.log("Connected to MongoDB");
