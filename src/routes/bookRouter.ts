@@ -53,6 +53,7 @@ const bookRouter: Router = express.Router();
  *   get:
  *     tags:
  *       - Books
+ *     summary: Get all Books
  *     description: Get all books with pagination
  *     parameters:
  *       - name: page
@@ -81,13 +82,47 @@ const bookRouter: Router = express.Router();
  *   post:
  *     tags:
  *       - Books
- *     description: Create a new book
+ *     summary: Create a new book
+ *     description: Create a new book and add it to the database
  *     requestBody:
+ *       description: Book object to create
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Book'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Serhat'ın Kitabı"
+ *               author:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                     example: "John Doe"
+ *                   country:
+ *                     type: string
+ *                     example: "USA"
+ *                   birthDate:
+ *                     type: string
+ *                     format: date
+ *                     example: "1980-01-01"
+ *               price:
+ *                 type: number
+ *                 example: 10
+ *               isbn:
+ *                 type: string
+ *                 example: "978658822010"
+ *               language:
+ *                 type: string
+ *                 example: "tr"
+ *               numberOfPages:
+ *                 type: number
+ *                 example: 12
+ *               publisher:
+ *                 type: string
+ *                 example: "Serhat Yayınları"
  *     responses:
  *       201:
  *         description: Book created successfully
@@ -95,7 +130,10 @@ const bookRouter: Router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Book'
+ *       400:
+ *         description: Invalid input
  */
+
 bookRouter
   .route("/")
   .get(BookController.getAllBooks)
@@ -107,6 +145,7 @@ bookRouter
  *   put:
  *     tags:
  *       - Books
+ *     summary: Update a single book
  *     description: Update a book by ID
  *     parameters:
  *       - name: id
@@ -149,6 +188,7 @@ bookRouter
  *   delete:
  *     tags:
  *       - Books
+ *     summary: Delete a single book
  *     description: Delete a book by ID
  *     parameters:
  *       - name: id

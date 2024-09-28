@@ -13,43 +13,44 @@ interface IBook extends Document {
 }
 
 // Create the Mongoose schema based on the interface
-const BookBaseSchema: Schema = new Schema<IBook>({
-  title: {
-    type: String,
-    required: true,
+const BookBaseSchema: Schema = new Schema<IBook>(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AuthorBase", // Reference to the Author model
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    isbn: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    language: {
+      type: String,
+      required: true,
+    },
+    numberOfPages: {
+      type: Number,
+      required: true,
+    },
+    publisher: {
+      type: String,
+      required: true,
+    },
   },
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "AuthorBase", // Reference to the Author model
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  isbn: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  language: {
-    type: String,
-    required: true,
-  },
-  numberOfPages: {
-    type: Number,
-    required: true,
-  },
-  publisher: {
-    type: String,
-    required: true,
-  },
-});
+  { versionKey: false }
+);
 
 // Create the Mongoose model using the schema and the existing database connection
-const BookBaseModel: Model<IBook> = DbConnection.model<IBook>(
+export const BookBaseModel: Model<IBook> = DbConnection.model<IBook>(
   "BookBase",
   BookBaseSchema
 );
-
-export { BookBaseModel };

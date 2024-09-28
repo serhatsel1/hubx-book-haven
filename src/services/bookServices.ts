@@ -77,8 +77,10 @@ export const createBookService = async ({
     numberOfPages,
     publisher,
   });
+
   if (error) {
-    console.error("errors", error);
+    console.log("errorsali", error.details[0].message.split("").join(""));
+
     throw new CustomError(ErrorTypes.ClientErrors.VALIDATION_ERROR);
   }
 

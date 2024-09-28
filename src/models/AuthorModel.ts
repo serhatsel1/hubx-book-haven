@@ -9,20 +9,23 @@ interface IAuthor extends Document {
 }
 
 // Create the Mongoose schema based on the interface
-const AuthorBaseSchema: Schema = new Schema<IAuthor>({
-  name: {
-    type: String,
-    required: true,
+const AuthorBaseSchema: Schema = new Schema<IAuthor>(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+    birthDate: {
+      type: Date,
+      required: true,
+    },
   },
-  country: {
-    type: String,
-    required: true,
-  },
-  birthDate: {
-    type: Date,
-    required: true,
-  },
-});
+  { versionKey: false }
+);
 
 // Create the Mongoose model using the schema and the existing database connection
 const AuthorBaseModel: Model<IAuthor> = DbConnection.model<IAuthor>(

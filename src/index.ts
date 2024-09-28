@@ -7,6 +7,8 @@ import bodyParser from "body-parser";
 import { indexRouter } from "./routes/indexRouter";
 
 import swaggerDocs from "./utils/swagger";
+import ErrorHandler from "./errors/ErrorHandler";
+import log from "./utils/logger";
 
 dotenv.config();
 
@@ -23,14 +25,13 @@ app.use(urlencoded({ extended: true }));
 app.use(json());
 
 app.use(indexRouter);
+app.use(ErrorHandler);
 
 DbConnection.once("connected", () => {
-  console.log("Connected to MongoDB");
+  log.info("Connected to MongoDB");
 
   app.listen(port, () => {
-    console.log(
-      `Server is running on port http://localhost:${process.env.PORT}`
-    );
+    log.info(`Server is running on port http://localhost:${process.env.PORT}`);
     swaggerDocs(app, Number(port));
   });
 });
