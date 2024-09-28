@@ -1,14 +1,11 @@
-import { Schema, Model, Document } from "mongoose";
-import DbConnection from "../db/DbConnection"; // Assuming you have this connection defined
+import { Schema, Model } from "mongoose";
+import DbConnection from "../db/DbConnection";
+import { IAuthor } from "../types/authorTypes";
 
-// Define an interface to represent the shape of your Author documents
-interface IAuthor extends Document {
-  name: string;
-  country: string;
-  birthDate: Date;
-}
-
-// Create the Mongoose schema based on the interface
+/**
+ * Mongoose schema for the AuthorBase model.
+ * Defines the structure and data types for author documents.
+ */
 const AuthorBaseSchema: Schema = new Schema<IAuthor>(
   {
     name: {
@@ -27,7 +24,10 @@ const AuthorBaseSchema: Schema = new Schema<IAuthor>(
   { versionKey: false }
 );
 
-// Create the Mongoose model using the schema and the existing database connection
+/**
+ * Mongoose model for the AuthorBase collection.
+ * Provides an interface for interacting with author documents in the database.
+ */
 export const AuthorBaseModel: Model<IAuthor> = DbConnection.model<IAuthor>(
   "AuthorBase",
   AuthorBaseSchema

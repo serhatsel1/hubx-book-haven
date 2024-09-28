@@ -1,9 +1,10 @@
 import Joi from "joi";
 import { authorSchema } from "./author-validation";
+
 /**
  * @swagger
  * components:
- *   schema:
+ *   schemas:
  *     Book:
  *       type: object
  *       properties:
@@ -52,25 +53,52 @@ import { authorSchema } from "./author-validation";
  *           example: 0
  */
 
-// Create Book Schema
+/**
+ * Joi schema for validating book data during creation.
+ * Ensures all required fields are present and have the correct data types.
+ */
 const createBookSchema = Joi.object({
-  title: Joi.string().required(),
-  author: authorSchema.required(),
-  price: Joi.number().min(0).required(),
-  language: Joi.string().required(),
-  numberOfPages: Joi.number().integer().min(1).required(),
+  title: Joi.string().required().messages({
+    "any.required": "Title is required!",
+    "string.empty": "Title cannot be empty!",
+  }),
+  author: authorSchema.required().messages({
+    "any.required": "Author is required!",
+  }),
+  price: Joi.number().min(0).required().messages({
+    "any.required": "Price is required!",
+    "number.min": "Price must be greater than or equal to 0!",
+  }),
+  language: Joi.string().required().messages({
+    "any.required": "Language is required!",
+    "string.empty": "Language cannot be empty!",
+  }),
+  numberOfPages: Joi.number().integer().min(1).required().messages({
+    "any.required": "Number of pages is required!",
+    "number.integer": "Number of pages must be an integer!",
+    "number.min": "Number of pages must be greater than or equal to 1!",
+  }),
   isbn: Joi.string()
     .pattern(/^(?:\d{9}[\dX]|\d{13})$/)
     .messages({
       "string.pattern.base":
         "ISBN must be either 9 digits followed by 10 or 13 digits.",
     }),
-  publisher: Joi.string().required(),
+  publisher: Joi.string().required().messages({
+    "any.required": "Publisher is required!",
+    "string.empty": "Publisher cannot be empty!",
+  }),
 }).unknown(false);
 
-// Update Book Schema
+/**
+ * Joi schema for validating book data during update.
+ * Allows for partial updates and ensures the provided fields have the correct data types.
+ */
 const updateBookSchema = Joi.object({
-  id: Joi.string().required(),
+  id: Joi.string().required().messages({
+    "any.required": "Book ID is required!",
+    "string.empty": "Book ID cannot be empty!",
+  }),
   title: Joi.string(),
   author: authorSchema,
   price: Joi.number().min(0),
@@ -80,9 +108,15 @@ const updateBookSchema = Joi.object({
   publisher: Joi.string(),
 }).unknown(false);
 
-// Delete Book Schema
+/**
+ * Joi schema for validating book data during deletion.
+ * Ensures only the book id is provided.
+ */
 const deleteBookSchema = Joi.object({
-  id: Joi.string().required(),
+  id: Joi.string().required().messages({
+    "any.required": "Book ID is required!",
+    "string.empty": "Book ID cannot be empty!",
+  }),
 }).unknown(false);
 
 export { createBookSchema, updateBookSchema, deleteBookSchema };

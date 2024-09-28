@@ -7,33 +7,22 @@ import {
   updateBookSchema,
 } from "../schema/book-validation";
 import AppError from "../errors/AppError";
-import { ErrorTypes } from "../types/ErrorTypes";
+import { ErrorTypes } from "../errors/ErrorTypes";
+import {
+  Book,
+  CreateBookInput,
+  DeleteBookInput,
+  UpdateBookInput,
+} from "../types/bookTypes";
+import { PaginationParams } from "../types/paginationParamsTypes";
+import { Author } from "../types/authorTypes";
 
-// Interface for Book Document
-interface Book extends Document {
-  title: string;
-  author: Types.ObjectId;
-  price: number;
-  isbn: string;
-  language: string;
-  numberOfPages: number;
-  publisher: string;
-}
-
-// Interface for Author Document
-interface Author extends Document {
-  name: string;
-  country: string;
-  birthDate: Date;
-}
-
-// Interface for Pagination Parameters
-interface PaginationParams {
-  page: string;
-  limit: string;
-}
-
-// Get all books service
+/**
+ * Retrieves all books with pagination.
+ *
+ * @param {PaginationParams} pagination - Pagination parameters (page, limit).
+ * @returns {Promise<object>} A promise that resolves to an object containing the list of books, total number of books, total pages, and current page.
+ */
 export const getAllBooksService = async ({
   page = "1",
   limit = "10",
@@ -56,17 +45,13 @@ export const getAllBooksService = async ({
   };
 };
 
-// Create a new book service
-interface CreateBookInput {
-  title: string;
-  author: { name: string; country: string; birthDate: string };
-  price: number;
-  language: string;
-  numberOfPages: number;
-  publisher: string;
-  isbn: string;
-}
-
+/**
+ * Creates a new book.
+ *
+ * @param {CreateBookInput} input - The book data to create.
+ * @returns {Promise<object>} A promise that resolves to an object containing the created book data.
+ * @throws {AppError} If the input data is invalid or a book with the same title or ISBN already exists.
+ */
 export const createBookService = async (input: CreateBookInput) => {
   // Validate input using Joi
   const { error } = createBookSchema.validate({ ...input });
@@ -112,18 +97,13 @@ export const createBookService = async (input: CreateBookInput) => {
   return { success: true, data: book };
 };
 
-// Update an existing book service
-interface UpdateBookInput {
-  id: string;
-  title?: string;
-  author?: { name: string; country: string; birthDate: string };
-  price?: number;
-  isbn?: string;
-  language?: string;
-  numberOfPages?: number;
-  publisher?: string;
-}
-
+/**
+ * Updates an existing book.
+ *
+ * @param {UpdateBookInput} input - The book data to update.
+ * @returns {Promise<object>} A promise that resolves to an object containing the updated book data.
+ * @throws {AppError} If the input data is invalid or the book is not found.
+ */
 export const updateBookService = async ({
   id,
   title,
@@ -167,11 +147,13 @@ export const updateBookService = async ({
   return { success: true, data: book };
 };
 
-// Delete a book service
-interface DeleteBookInput {
-  id: string;
-}
-
+/**
+ * Deletes a book.
+ *
+ * @param {DeleteBookInput} input - The book id to delete.
+ * @returns {Promise<object>} A promise that resolves to an object indicating success or failure.
+ * @throws {AppError} If the book is not found.
+ */
 export const deleteBookService = async ({ id }: DeleteBookInput) => {
   // Validate input using Joi
   const { error } = deleteBookSchema.validate({ id });

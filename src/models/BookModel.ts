@@ -1,18 +1,11 @@
-import mongoose, { Schema, Model, Document, Types } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import DbConnection from "../db/DbConnection"; // Assuming you have this connection defined
+import { IBook } from "../types/bookTypes";
 
-// Define an interface to represent the shape of your Book documents
-interface IBook extends Document {
-  title: string;
-  author: Types.ObjectId; // Reference to the Author model
-  price: number;
-  isbn: string;
-  language: string;
-  numberOfPages: number;
-  publisher: string;
-}
-
-// Create the Mongoose schema based on the interface
+/**
+ * Mongoose schema for the BookBase model.
+ * Defines the structure and data types for book documents.
+ */
 const BookBaseSchema: Schema = new Schema<IBook>(
   {
     title: {
@@ -49,7 +42,10 @@ const BookBaseSchema: Schema = new Schema<IBook>(
   { versionKey: false }
 );
 
-// Create the Mongoose model using the schema and the existing database connection
+/**
+ * Mongoose model for the BookBase collection.
+ * Provides an interface for interacting with book documents in the database.
+ */
 export const BookBaseModel: Model<IBook> = DbConnection.model<IBook>(
   "BookBase",
   BookBaseSchema

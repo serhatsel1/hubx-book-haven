@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import AppError from "./AppError";
 
-const errorHandler2 = (
-  error: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  // console.log(error);
-
-  console.log("error.name2", error);
+/**
+ * Express middleware for handling errors.
+ *
+ * @param {any} error - The error object.
+ * @param {Response} res - Express response object.
+ *
+ * @returns {void} This function does not return a value.
+ */
+const errorHandler = (error: any, res: Response) => {
   const cleanErrorMessage = (message: string) => {
-    return message.replace(/["']/g, '');
+    return message.replace(/["']/g, "");
   };
   if (error.name === "ValidationError") {
     return res.status(400).send({
@@ -22,14 +22,11 @@ const errorHandler2 = (
 
   if (error instanceof AppError) {
     return res.status(error.status).json({
-      // errorCode: error.errorCode,
-
       message: cleanErrorMessage(error.message),
       status: error.status,
     });
   }
-
   return res.status(500).send("Something went wrong");
 };
 
-export default errorHandler2;
+export default errorHandler;

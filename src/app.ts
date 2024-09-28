@@ -2,8 +2,15 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { indexRouter } from "./routes/indexRouter";
-import errorHandler2 from "./errors/ErrorHandler2";
+import errorHandler from "./errors/ErrorHandler";
 
+/**
+ * Express application instance.
+ *
+ * Configures middleware for CORS, body parsing, routing, and error handling.
+ *
+ * @type {Express}
+ */
 const app = express();
 app.use(cors({ origin: "*", credentials: true }));
 
@@ -11,15 +18,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(indexRouter);
 
-app.use(
-  (
-    error: any,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    errorHandler2(error, req, res, next);
-  }
-);
+app.use((error: any, res: express.Response) => {
+  errorHandler(error, res);
+});
 
 export default app;
