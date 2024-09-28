@@ -8,7 +8,7 @@ import {
 } from "../services/bookServices";
 import { BookData } from "../types/bookTypes";
 
-export class BookController {
+export class bookController {
   /**
    * Get all books with pagination.
    *
@@ -34,7 +34,7 @@ export class BookController {
       page: page,
       limit: limit,
     });
-    res.json(response);
+    res.status(200).json(response);
   });
 
   /**
@@ -52,26 +52,10 @@ export class BookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static create = expressAsyncHandler(async (req: Request, res: Response) => {
-    const {
-      title,
-      author,
-      price,
-      isbn,
-      language,
-      numberOfPages,
-      publisher,
-    }: BookData = req.body;
+    const bookData: BookData = req.body;
 
-    const response = await createBookService({
-      title,
-      author,
-      price,
-      isbn,
-      language,
-      numberOfPages,
-      publisher,
-    });
-    res.json(response);
+    const response = await createBookService(bookData);
+    res.status(201).json(response);
   });
 
   /**
@@ -91,27 +75,10 @@ export class BookController {
    */
   static update = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const {
-      title,
-      author,
-      price,
-      isbn,
-      language,
-      numberOfPages,
-      publisher,
-    }: BookData = req.body;
+    const bookData: BookData = req.body;
 
-    const response = await updateBookService({
-      id,
-      title,
-      author,
-      price,
-      isbn,
-      language,
-      numberOfPages,
-      publisher,
-    });
-    res.json(response);
+    const response = await updateBookService({ id, ...bookData });
+    res.status(200).json(response);
   });
 
   /**
@@ -135,4 +102,4 @@ export class BookController {
   });
 }
 
-module.exports.BookController = BookController;
+module.exports.bookController = bookController;

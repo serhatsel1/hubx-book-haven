@@ -1,4 +1,3 @@
-import { Document, Types } from "mongoose";
 import { BookBaseModel as BookBase } from "../models/BookModel";
 import { AuthorBaseModel as AuthorBase } from "../models/AuthorModel";
 import {
@@ -41,7 +40,7 @@ export const getAllBooksService = async ({
     data: books,
     totalBooks: booksCount,
     totalPages: Math.ceil(booksCount / limitNumber),
-    currentPage: page,
+    currentPage: pageNumber,
   };
 };
 
@@ -53,28 +52,24 @@ export const getAllBooksService = async ({
  * @throws {AppError} If the input data is invalid or a book with the same title or ISBN already exists.
  */
 export const createBookService = async (input: CreateBookInput) => {
-  // Validate input using Joi
-  const { error } = createBookSchema.validate({ ...input });
+  const { error } = createBookSchema.validate(input);
   if (error) {
-    console.log("asdasd", error);
-    console.log("asdasd", error._original);
-
     throw new AppError({
-      message: error?.details[0]?.message || "Validation Error",
+      message: error.details[0]?.message || "Validation Error",
       status: 400,
     });
   }
 
   const existingBook = await BookBase.findOne({ title: input.title });
-  const existingISBN = await BookBase.findOne({ isbn: input.isbn });
   if (existingBook) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_ALREADY_EXISTS);
   }
+
+  const existingISBN = await BookBase.findOne({ isbn: input.isbn });
   if (existingISBN) {
     throw new AppError(ErrorTypes.ClientErrors.ISBN_ALREADY_EXISTS);
   }
 
-  // Create a new author profile
   const authorProfile: Author = new AuthorBase({
     name: input.author.name,
     country: input.author.country,
@@ -82,15 +77,9 @@ export const createBookService = async (input: CreateBookInput) => {
   });
   await authorProfile.save();
 
-  // Create a new book
   const book: Book = new BookBase({
-    title: input.title,
+    ...input,
     author: authorProfile._id,
-    price: input.price,
-    isbn: input.isbn,
-    language: input.language,
-    numberOfPages: input.numberOfPages,
-    publisher: input.publisher,
   });
   await book.save();
 
@@ -104,39 +93,18 @@ export const createBookService = async (input: CreateBookInput) => {
  * @returns {Promise<object>} A promise that resolves to an object containing the updated book data.
  * @throws {AppError} If the input data is invalid or the book is not found.
  */
-export const updateBookService = async ({
-  id,
-  title,
-  author,
-  price,
-  isbn,
-  language,
-  numberOfPages,
-  publisher,
-}: UpdateBookInput) => {
-  // Validate input using Joi
-  const { error } = updateBookSchema.validate({
-    id,
-    title,
-    author,
-    price,
-    isbn,
-    language,
-    numberOfPages,
-    publisher,
-  });
-
+export const updateBookService = async (input: UpdateBookInput) => {
+  const { error } = updateBookSchema.validate(input);
   if (error) {
     throw new AppError({
-      message: error?.details[0]?.message || "Validation Error",
+      message: error.details[0]?.message || "Validation Error",
       status: 400,
     });
   }
 
-  // Update the book in the database
   const book: Book | null = await BookBase.findOneAndUpdate(
-    { _id: id },
-    { title, author, price, isbn, language, numberOfPages, publisher },
+    { _id: input.id },
+    input,
     { new: true }
   );
 
@@ -155,16 +123,14 @@ export const updateBookService = async ({
  * @throws {AppError} If the book is not found.
  */
 export const deleteBookService = async ({ id }: DeleteBookInput) => {
-  // Validate input using Joi
   const { error } = deleteBookSchema.validate({ id });
   if (error) {
     throw new AppError({
-      message: error?.details[0]?.message || "Validation Error",
+      message: error.details[0]?.message || "Validation Error",
       status: 400,
     });
   }
 
-  // Delete the book from the database
   const book: Book | null = await BookBase.findOneAndDelete({ _id: id });
 
   if (!book) {

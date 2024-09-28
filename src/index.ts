@@ -7,6 +7,8 @@ import bodyParser from "body-parser";
 import { indexRouter } from "./routes/indexRouter";
 
 import swaggerDocs from "./utils/swagger";
+import log from "./utils/logger";
+import { errorHandler } from "./errors/ErrorHandler";
 
 dotenv.config();
 
@@ -29,8 +31,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(urlencoded({ extended: true }));
 app.use(json());
 
+swaggerDocs(app, Number(port));
+
 app.use(indexRouter);
 
+app.use(
+  (error: any, req: express.Request, res: express.Response, next: any) => {
+    errorHandler(error, req, res, next);
+  }
+);
 /**
  * Starts the server and sets up Swagger documentation after connecting to the database.
  *
@@ -38,13 +47,10 @@ app.use(indexRouter);
  * Also sets up Swagger documentation for the API.
  */
 DbConnection.once("connected", () => {
-  console.log("Connected to MongoDB");
+  log.info("Connected to MongoDB");
 
   app.listen(port, () => {
-    console.log(
-      `Server is running on port http://localhost:${process.env.PORT}`
-    );
-    swaggerDocs(app, Number(port));
+    log.info(`Server is running on port http://localhost:${process.env.PORT}`);
   });
 });
 
@@ -55,6 +61,6 @@ DbConnection.once("connected", () => {
  * Exits the process with an error code if the connection fails.
  */
 DbConnection.on("error", (err) => {
-  console.error("Error connecting to MongoDB:", err);
+  log.error("Error connecting to MongoDB:", err);
   process.exit(1);
 });

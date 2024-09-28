@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { BookController } from "../controllers/BookController";
+import { bookController } from "../controllers/BookController";
 
 const bookRouter: Router = express.Router();
 
@@ -113,7 +113,7 @@ const bookRouter: Router = express.Router();
  *                 example: 10
  *               isbn:
  *                 type: string
- *                 example: "978658822010"
+ *                 example: "9786588220103"
  *                 description: |
  *                   ISBN number must start with "978" and be either 10 or 13 characters long.
  *                   Valid examples:
@@ -139,7 +139,7 @@ const bookRouter: Router = express.Router();
  *         description: Invalid input
  */
 
-bookRouter.route("/").get(BookController.getAll).post(BookController.create);
+bookRouter.route("/").get(bookController.getAll).post(bookController.create);
 
 /**
  * @swagger
@@ -205,7 +205,7 @@ bookRouter.route("/").get(BookController.getAll).post(BookController.create);
  */
 bookRouter
   .route("/:id")
-  .put(BookController.update)
-  .delete(BookController.delete);
+  .put(bookController.update)
+  .delete(bookController.delete);
 
 export { bookRouter };

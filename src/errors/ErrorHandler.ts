@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, Request } from "express";
 import AppError from "./AppError";
 
 /**
@@ -9,12 +9,18 @@ import AppError from "./AppError";
  *
  * @returns {void} This function does not return a value.
  */
-const errorHandler = (error: any, res: Response) => {
+export const errorHandler = (
+  error: any,
+  req: Request,
+  res: Response,
+  next: any
+) => {
   const cleanErrorMessage = (message: string) => {
     return message.replace(/["']/g, "");
   };
   if (error.name === "ValidationError") {
     return res.status(400).send({
+      success: false,
       type: "ValidationError",
       details: error.details,
     });
@@ -22,11 +28,14 @@ const errorHandler = (error: any, res: Response) => {
 
   if (error instanceof AppError) {
     return res.status(error.status).json({
+      success: false,
       message: cleanErrorMessage(error.message),
       status: error.status,
     });
   }
-  return res.status(500).send("Something went wrong");
+  return res.status(500).send({
+    success: false,
+    message: "Critical Error Occoured",
+    status: 500,
+  });
 };
-
-export default errorHandler;
