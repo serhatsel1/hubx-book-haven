@@ -59,8 +59,14 @@ const createBookSchema = Joi.object({
   price: Joi.number().min(0).required(),
   language: Joi.string().required(),
   numberOfPages: Joi.number().integer().min(1).required(),
+  isbn: Joi.string()
+    .pattern(/^(?:\d{9}[\dX]|\d{13})$/)
+    .messages({
+      "string.pattern.base":
+        "ISBN must be either 9 digits followed by 10 or 13 digits.",
+    }),
   publisher: Joi.string().required(),
-});
+}).unknown(false);
 
 // Update Book Schema
 const updateBookSchema = Joi.object({
@@ -68,15 +74,15 @@ const updateBookSchema = Joi.object({
   title: Joi.string(),
   author: authorSchema,
   price: Joi.number().min(0),
-  isbn: Joi.string(),
+  isbn: Joi.string().pattern(/^(?:\d{9}[\dX]|\d{13})$/),
   language: Joi.string(),
   numberOfPages: Joi.number().integer().min(1),
   publisher: Joi.string(),
-});
+}).unknown(false);
 
 // Delete Book Schema
 const deleteBookSchema = Joi.object({
   id: Joi.string().required(),
-});
+}).unknown(false);
 
 export { createBookSchema, updateBookSchema, deleteBookSchema };

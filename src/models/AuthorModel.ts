@@ -28,9 +28,7 @@ const AuthorBaseSchema: Schema = new Schema<IAuthor>(
 );
 
 // Create the Mongoose model using the schema and the existing database connection
-const AuthorBaseModel: Model<IAuthor> = DbConnection.model<IAuthor>(
+export const AuthorBaseModel: Model<IAuthor> = DbConnection.model<IAuthor>(
   "AuthorBase",
   AuthorBaseSchema
 );
-
-export { AuthorBaseModel };

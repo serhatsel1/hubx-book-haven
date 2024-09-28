@@ -36,7 +36,7 @@ const bookRouter: Router = express.Router();
  *           example: 10
  *         isbn:
  *           type: string
- *           example: "978658822010"
+ *           example: "9786588220130"
  *         language:
  *           type: string
  *           example: "tr"
@@ -113,7 +113,12 @@ const bookRouter: Router = express.Router();
  *                 example: 10
  *               isbn:
  *                 type: string
- *                 example: "978658822010"
+ *                 example: "9786588220130"
+ *                 description: |
+ *                   ISBN number must start with "978" and be either 10 or 13 characters long.
+ *                   Valid examples:
+ *                   - 9781234567 (10 characters, ISBN-10)
+ *                   - 9781234567890 (13 characters, ISBN-13)
  *               language:
  *                 type: string
  *                 example: "tr"

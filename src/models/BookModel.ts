@@ -18,6 +18,7 @@ const BookBaseSchema: Schema = new Schema<IBook>(
     title: {
       type: String,
       required: true,
+      unique: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -31,7 +32,6 @@ const BookBaseSchema: Schema = new Schema<IBook>(
     isbn: {
       type: String,
       required: true,
-      unique: true,
     },
     language: {
       type: String,
