@@ -1,10 +1,9 @@
-import { ErrorType } from "./../types/errorTypes";
 import { BookBaseModel as BookBase } from "../models/bookModel";
 import {
   createBookSchema,
   deleteBookSchema,
   updateBookSchema,
-} from "../schema/bookValidation";
+} from "../schemas/bookValidation";
 
 import {
   CreateBookInput,

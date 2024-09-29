@@ -74,6 +74,10 @@ You can use the following command to run the tests:
 ```bash
 docker-compose run app npm run test
 ```
+## Data flow
+![](./diagram/data-flow.png)
+
+
 ## Project Structure
 The folder structure of this app is explained below:
 

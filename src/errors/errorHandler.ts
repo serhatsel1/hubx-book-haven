@@ -15,7 +15,6 @@ export const errorHandler = (
   res: Response,
   next: any
 ) => {
-  console.log("Error Handler", error);
   const cleanErrorMessage = (message: string) => {
     return message.replace(/["']/g, "");
   };
