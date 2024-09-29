@@ -1,5 +1,5 @@
 import { ErrorType } from "./../types/errorTypes";
-import { BookBaseModel as BookBase } from "../models/BookModel";
+import { BookBaseModel as BookBase } from "../models/bookModel";
 import {
   createBookSchema,
   deleteBookSchema,
