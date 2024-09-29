@@ -20,9 +20,13 @@ dotenv.config();
  * @type {Express}
  */
 const app = express();
-const port = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: "*", credentials: true }));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use(bodyParser.json());
 
@@ -31,7 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(urlencoded({ extended: true }));
 app.use(json());
 
-swaggerDocs(app, Number(port));
+swaggerDocs(app, Number(PORT));
 
 app.use(indexRouter);
 
@@ -49,8 +53,8 @@ app.use(
 DbConnection.once("connected", () => {
   log.info("Connected to MongoDB");
 
-  app.listen(port, () => {
-    log.info(`Server is running on port http://localhost:${process.env.PORT}`);
+  app.listen(PORT, () => {
+    log.info(`Server is running on port http://localhost:${PORT}`);
   });
 });
 

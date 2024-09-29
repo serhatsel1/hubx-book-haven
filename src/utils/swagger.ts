@@ -14,7 +14,7 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 8000}`, // Fallback ekledik
+        url: `http://localhost:${process.env.PORT || 3000}`, // Fallback ekledik
       },
     ],
   },

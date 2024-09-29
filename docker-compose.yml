@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  node-server:
+    container_name: node-server
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/opt/app/src
+      - ./package.json:/opt/app/package.json
+      - ./package-lock.json:/opt/app/package-lock.json
+      - ./tsconfig.json:/opt/app/tsconfig.json
+    command: sh -c "npm run build && npm start"
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "27017:27017"

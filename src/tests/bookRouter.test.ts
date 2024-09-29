@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import * as bookServices from "../services/bookServices";
 import AppError from "../errors/AppError";
 import { ErrorTypes } from "../errors/ErrorTypes";
-import { bookController } from "../controllers/BookController";
+import { bookController } from "../controllers/bookController";
 
 jest.mock("../services/bookServices");
 
