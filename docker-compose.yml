@@ -2,6 +2,8 @@ version: '3.4'
 services:
   node-server:
     container_name: node-server
+    environment:
+      - MONGO_DB_URI=mongodb://mongodb:27017/hubxCollection
     build: .
     ports:
       - "3000:3000"
@@ -10,14 +12,11 @@ services:
       - ./package.json:/opt/app/package.json
       - ./package-lock.json:/opt/app/package-lock.json
       - ./tsconfig.json:/opt/app/tsconfig.json
-    command: sh -c "npm run build && npm start"
   mongodb:
     container_name: mongodb
     image: mongo
     ports:
       - "27017:27017"
-  test:
-    build: .
-    command: npm run test
-    depends_on:
-      - mongodb
+networks:
+  app-network:
+    driver: bridge

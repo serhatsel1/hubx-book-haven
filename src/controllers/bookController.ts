@@ -8,7 +8,6 @@ import {
 } from "../services/bookServices";
 import { BookData } from "../types/bookTypes";
 
-
 export class BookController {
   /**
    * Get all books with pagination.
@@ -26,8 +25,8 @@ export class BookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static getAll = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { page, limit } = req.query
-    
+    const { page = 1, limit = 10 } = req.query;
+
     const response = await getAllBooksService({
       page: parseInt(page as string),
       limit: parseInt(limit as string),
@@ -51,7 +50,6 @@ export class BookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static create = expressAsyncHandler(async (req: Request, res: Response) => {
-
     const bookData: BookData = req.body;
 
     const response = await createBookService(bookData);
@@ -99,11 +97,10 @@ export class BookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static delete = expressAsyncHandler(async (req: Request, res: Response) => {
-
     const { id } = req.params;
 
     const response = await deleteBookService({ id });
-    
+
     res.json(response);
   });
 }

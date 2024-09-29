@@ -22,14 +22,10 @@ import { Types } from "mongoose";
  * @param {PaginationParams} pagination - Pagination parameters (page, limit).
  * @returns {Promise<object>} A promise that resolves to an object containing the list of books, total number of books, total pages, and current page.
  */
-export const getAllBooksService = async ({
-  page = 1,
-  limit = 10,
-}: PaginationParams) => {
+export const getAllBooksService = async ({ page, limit }: PaginationParams) => {
   const booksCount = await BookBase.countDocuments();
 
   const books = await BookBase.find()
-    .populate("author")
     .skip((page - 1) * limit)
     .limit(limit);
 
@@ -70,7 +66,7 @@ export const createBookService = async (input: CreateBookInput) => {
   if (existingISBN) {
     throw new AppError(ErrorTypes.ClientErrors.ISBN_ALREADY_EXISTS);
   }
-
+  //@@@@@
   const authorProfile = new AuthorBaseModel({
     name: input.author.name,
     country: input.author.country,
@@ -85,7 +81,9 @@ export const createBookService = async (input: CreateBookInput) => {
   });
   await book.save();
 
-  return { success: true, data: book };
+  const populatedBook = await BookBase.findById(book._id).populate("author");
+
+  return { success: true, data: populatedBook };
 };
 
 /**
@@ -96,8 +94,6 @@ export const createBookService = async (input: CreateBookInput) => {
  * @throws {AppError} If the input data is invalid or the book is not found.
  */
 export const updateBookService = async (input: UpdateBookInput) => {
-  const { error } = updateBookSchema.validate(input);
-
   if (!Types.ObjectId.isValid(input.id)) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
   }
@@ -106,6 +102,17 @@ export const updateBookService = async (input: UpdateBookInput) => {
   if (!existingBook) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND_ID);
   }
+
+  const existingBookWithSameTitle = await BookBase.exists({
+    _id: { $ne: input.id },
+    title: input.title,
+  });
+
+  if (existingBookWithSameTitle) {
+    throw new AppError(ErrorTypes.ClientErrors.BOOK_ALREADY_EXISTS);
+  }
+
+  const { error } = updateBookSchema.validate(input);
 
   if (error) {
     throw new AppError({
@@ -136,13 +143,9 @@ export const deleteBookService = async (input: DeleteBookInput) => {
   const { id } = input;
   const { error } = deleteBookSchema.validate({ id });
 
+  //@@@@
   if (!Types.ObjectId.isValid(input.id)) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
-  }
-
-  const existingBook = await BookBase.findById(input.id);
-  if (!existingBook) {
-    throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND_ID);
   }
 
   if (error) {

@@ -9,10 +9,15 @@ import AppError from "./appError";
  *
  * @returns {void} This function does not return a value.
  */
+
+interface ValidationError extends Error {
+  details: string[];
+}
 export const errorHandler = (
-  error: any,
+  error: Error,
   req: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   next: any
 ) => {
   const cleanErrorMessage = (message: string) => {
@@ -23,7 +28,7 @@ export const errorHandler = (
     return res.status(400).send({
       success: false,
       type: "ValidationError",
-      details: error.details,
+      details: (error as ValidationError).details,
     });
   }
 

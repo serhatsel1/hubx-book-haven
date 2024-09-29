@@ -1,16 +1,13 @@
-import express, { urlencoded, json } from "express";
+import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import bodyParser from "body-parser";
-
 import { indexRouter } from "./routes/indexRouter";
-
-import swaggerDocs from "./utils/swagger";
 import log from "./utils/logger";
 import { errorHandler } from "./errors/errorHandler";
 import DbConnection from "./db/dbConnection";
-
-dotenv.config();
+import swaggerDocs from "./utils/swagger/swagger";
 
 /**
  * Express application instance.
@@ -21,28 +18,28 @@ dotenv.config();
  */
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+
+app.use(cors({ origin: "*" }));
 
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(urlencoded({ extended: true }));
-app.use(json());
 
 swaggerDocs(app, Number(PORT));
 
 app.use(indexRouter);
 
 app.use(
-  (error: any, req: express.Request, res: express.Response, next: any) => {
+  (
+    error: Error,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
     errorHandler(error, req, res, next);
   }
 );
+
 /**
  * Starts the server and sets up Swagger documentation after connecting to the database.
  *
