@@ -8,7 +8,8 @@ import {
 } from "../services/bookServices";
 import { BookData } from "../types/bookTypes";
 
-export class bookController {
+
+export class BookController {
   /**
    * Get all books with pagination.
    *
@@ -25,15 +26,13 @@ export class bookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static getAll = expressAsyncHandler(async (req: Request, res: Response) => {
-    const { page = "1", limit = "10" } = req.query as {
-      page?: string;
-      limit?: string;
-    };
-
+    const { page, limit } = req.query
+    
     const response = await getAllBooksService({
-      page: page,
-      limit: limit,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
     });
+
     res.status(200).json(response);
   });
 
@@ -52,9 +51,11 @@ export class bookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static create = expressAsyncHandler(async (req: Request, res: Response) => {
+
     const bookData: BookData = req.body;
 
     const response = await createBookService(bookData);
+
     res.status(201).json(response);
   });
 
@@ -75,9 +76,11 @@ export class bookController {
    */
   static update = expressAsyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+
     const bookData: BookData = req.body;
 
     const response = await updateBookService({ id, ...bookData });
+
     res.status(200).json(response);
   });
 
@@ -96,10 +99,13 @@ export class bookController {
    *  - `500 Internal Server Error` if an unexpected error occurs.
    */
   static delete = expressAsyncHandler(async (req: Request, res: Response) => {
+
     const { id } = req.params;
+
     const response = await deleteBookService({ id });
+    
     res.json(response);
   });
 }
 
-module.exports.bookController = bookController;
+module.exports.BookController = BookController;

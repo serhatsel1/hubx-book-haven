@@ -1,12 +1,12 @@
-import mongoose, { Schema, Model } from "mongoose";
-import DbConnection from "../db/DbConnection"; // Assuming you have this connection defined
+import mongoose, { Schema } from "mongoose";
 import { IBook } from "../types/bookTypes";
+import DbConnection from "../db/dbConnection";
 
 /**
  * Mongoose schema for the BookBase model.
  * Defines the structure and data types for book documents.
  */
-const BookBaseSchema: Schema = new Schema<IBook>(
+const BookBaseSchema = new Schema<IBook>(
   {
     title: {
       type: String,
@@ -46,7 +46,7 @@ const BookBaseSchema: Schema = new Schema<IBook>(
  * Mongoose model for the BookBase collection.
  * Provides an interface for interacting with book documents in the database.
  */
-export const BookBaseModel: Model<IBook> = DbConnection.model<IBook>(
+export const BookBaseModel = DbConnection.model<IBook>(
   "BookBase",
   BookBaseSchema
 );

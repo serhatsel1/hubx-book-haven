@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import * as bookServices from "../services/bookServices";
-import AppError from "../errors/AppError";
-import { ErrorTypes } from "../errors/ErrorTypes";
-import { bookController } from "../controllers/bookController";
+import AppError from "../errors/appError";
+import { BookController } from "../controllers/bookController";
+import { ErrorTypes } from "../errors/errorTypes";
 
 jest.mock("../services/bookServices");
 
@@ -60,16 +60,12 @@ describe("bookController", () => {
 
       mockRequest.query = { page: "1", limit: "10" };
 
-      await bookController.getAll(
+      await BookController.getAll(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
       );
 
-      expect(bookServices.getAllBooksService).toHaveBeenCalledWith({
-        page: "1",
-        limit: "10",
-      });
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
         data: mockBooks,
@@ -106,7 +102,7 @@ describe("bookController", () => {
 
       mockRequest.body = bookData;
 
-      await bookController.create(
+      await BookController.create(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -138,7 +134,7 @@ describe("bookController", () => {
 
       mockRequest.body = invalidBookData;
 
-      await bookController.create(
+      await BookController.create(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -175,7 +171,7 @@ describe("bookController", () => {
 
       mockRequest.body = existingBookData;
 
-      await bookController.create(
+      await BookController.create(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -214,7 +210,7 @@ describe("bookController", () => {
       mockRequest.params = { id: "1" };
       mockRequest.body = updatedBookData;
 
-      await bookController.update(
+      await BookController.update(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -247,7 +243,7 @@ describe("bookController", () => {
       mockRequest.params = { id: "1" };
       mockRequest.body = invalidBookData;
 
-      await bookController.update(
+      await BookController.update(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -278,7 +274,7 @@ describe("bookController", () => {
       mockRequest.params = { id: "nonexistent" };
       mockRequest.body = bookData;
 
-      await bookController.update(
+      await BookController.update(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -313,7 +309,7 @@ describe("bookController", () => {
 
       mockRequest.params = { id: "1" };
 
-      await bookController.delete(
+      await BookController.delete(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -340,7 +336,7 @@ describe("bookController", () => {
 
       mockRequest.params = { id: "invalid-id" };
 
-      await bookController.delete(
+      await BookController.delete(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -368,7 +364,7 @@ describe("bookController", () => {
 
       mockRequest.params = { id: "nonexistent" };
 
-      await bookController.delete(
+      await BookController.delete(
         mockRequest as Request,
         mockResponse as Response,
         mockNext

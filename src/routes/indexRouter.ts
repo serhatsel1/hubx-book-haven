@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express from "express";
 import { bookRouter } from "./bookRouter";
 
 /**
@@ -8,7 +8,7 @@ import { bookRouter } from "./bookRouter";
  *
  * @type {Router}
  */
-const indexRouter: Router = express.Router();
+const indexRouter = express.Router();
 
 indexRouter.use("/books", bookRouter);
 

@@ -1,20 +1,21 @@
+import { ErrorType } from "./../types/errorTypes";
 import { BookBaseModel as BookBase } from "../models/BookModel";
-import { AuthorBaseModel as AuthorBase } from "../models/AuthorModel";
 import {
   createBookSchema,
   deleteBookSchema,
   updateBookSchema,
-} from "../schema/book-validation";
-import AppError from "../errors/AppError";
-import { ErrorTypes } from "../errors/ErrorTypes";
+} from "../schema/bookValidation";
+
 import {
-  Book,
   CreateBookInput,
   DeleteBookInput,
   UpdateBookInput,
 } from "../types/bookTypes";
 import { PaginationParams } from "../types/paginationParamsTypes";
-import { Author } from "../types/authorTypes";
+import { AuthorBaseModel } from "../models/authorModel";
+import { ErrorTypes } from "../errors/errorTypes";
+import AppError from "../errors/appError";
+import { Types } from "mongoose";
 
 /**
  * Retrieves all books with pagination.
@@ -23,24 +24,22 @@ import { Author } from "../types/authorTypes";
  * @returns {Promise<object>} A promise that resolves to an object containing the list of books, total number of books, total pages, and current page.
  */
 export const getAllBooksService = async ({
-  page = "1",
-  limit = "10",
+  page = 1,
+  limit = 10,
 }: PaginationParams) => {
-  const pageNumber = parseInt(page);
-  const limitNumber = parseInt(limit);
-
   const booksCount = await BookBase.countDocuments();
+
   const books = await BookBase.find()
     .populate("author")
-    .skip((pageNumber - 1) * limitNumber)
-    .limit(limitNumber);
+    .skip((page - 1) * limit)
+    .limit(limit);
 
   return {
     success: true,
     data: books,
     totalBooks: booksCount,
-    totalPages: Math.ceil(booksCount / limitNumber),
-    currentPage: pageNumber,
+    totalPages: Math.ceil(booksCount / limit),
+    currentPage: page,
   };
 };
 
@@ -53,6 +52,7 @@ export const getAllBooksService = async ({
  */
 export const createBookService = async (input: CreateBookInput) => {
   const { error } = createBookSchema.validate(input);
+
   if (error) {
     throw new AppError({
       message: error.details[0]?.message || "Validation Error",
@@ -61,23 +61,26 @@ export const createBookService = async (input: CreateBookInput) => {
   }
 
   const existingBook = await BookBase.findOne({ title: input.title });
+
   if (existingBook) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_ALREADY_EXISTS);
   }
 
   const existingISBN = await BookBase.findOne({ isbn: input.isbn });
+
   if (existingISBN) {
     throw new AppError(ErrorTypes.ClientErrors.ISBN_ALREADY_EXISTS);
   }
 
-  const authorProfile: Author = new AuthorBase({
+  const authorProfile = new AuthorBaseModel({
     name: input.author.name,
     country: input.author.country,
     birthDate: new Date(input.author.birthDate),
   });
+
   await authorProfile.save();
 
-  const book: Book = new BookBase({
+  const book = new BookBase({
     ...input,
     author: authorProfile._id,
   });
@@ -95,6 +98,16 @@ export const createBookService = async (input: CreateBookInput) => {
  */
 export const updateBookService = async (input: UpdateBookInput) => {
   const { error } = updateBookSchema.validate(input);
+
+  if (!Types.ObjectId.isValid(input.id)) {
+    throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
+  }
+
+  const existingBook = await BookBase.findById(input.id);
+  if (!existingBook) {
+    throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND_ID);
+  }
+
   if (error) {
     throw new AppError({
       message: error.details[0]?.message || "Validation Error",
@@ -102,11 +115,9 @@ export const updateBookService = async (input: UpdateBookInput) => {
     });
   }
 
-  const book: Book | null = await BookBase.findOneAndUpdate(
-    { _id: input.id },
-    input,
-    { new: true }
-  );
+  const book = await BookBase.findOneAndUpdate({ _id: input.id }, input, {
+    new: true,
+  });
 
   if (!book) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND);
@@ -122,8 +133,19 @@ export const updateBookService = async (input: UpdateBookInput) => {
  * @returns {Promise<object>} A promise that resolves to an object indicating success or failure.
  * @throws {AppError} If the book is not found.
  */
-export const deleteBookService = async ({ id }: DeleteBookInput) => {
+export const deleteBookService = async (input: DeleteBookInput) => {
+  const { id } = input;
   const { error } = deleteBookSchema.validate({ id });
+
+  if (!Types.ObjectId.isValid(input.id)) {
+    throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
+  }
+
+  const existingBook = await BookBase.findById(input.id);
+  if (!existingBook) {
+    throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND_ID);
+  }
+
   if (error) {
     throw new AppError({
       message: error.details[0]?.message || "Validation Error",
@@ -131,7 +153,7 @@ export const deleteBookService = async ({ id }: DeleteBookInput) => {
     });
   }
 
-  const book: Book | null = await BookBase.findOneAndDelete({ _id: id });
+  const book = await BookBase.findOneAndDelete({ _id: id });
 
   if (!book) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND);

@@ -15,9 +15,11 @@ const log = logger({
       colorize: true,
     },
   },
+  
   base: {
     pid: false,
   },
+
   timestamp: () => `,"time":"${dayjs().format()}"`,
 });
 

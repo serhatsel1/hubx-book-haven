@@ -16,3 +16,8 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+  test:
+    build: .
+    command: npm run test
+    depends_on:
+      - mongodb

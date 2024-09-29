@@ -1,7 +1,7 @@
-import express, { Router } from "express";
-import { bookController } from "../controllers/bookController";
+import express from "express";
+import { BookController } from "../controllers/bookController";
 
-const bookRouter: Router = express.Router();
+const bookRouter = express.Router();
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ const bookRouter: Router = express.Router();
  *         description: Invalid input
  */
 
-bookRouter.route("/").get(bookController.getAll).post(bookController.create);
+bookRouter.route("/").get(BookController.getAll).post(BookController.create);
 
 /**
  * @swagger
@@ -205,7 +205,7 @@ bookRouter.route("/").get(bookController.getAll).post(bookController.create);
  */
 bookRouter
   .route("/:id")
-  .put(bookController.update)
-  .delete(bookController.delete);
+  .put(BookController.update)
+  .delete(BookController.delete);
 
 export { bookRouter };

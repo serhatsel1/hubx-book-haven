@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import AppError from "./AppError";
+import AppError from "./appError";
 
 /**
  * Express middleware for handling errors.
@@ -15,9 +15,11 @@ export const errorHandler = (
   res: Response,
   next: any
 ) => {
+  console.log("Error Handler", error);
   const cleanErrorMessage = (message: string) => {
     return message.replace(/["']/g, "");
   };
+
   if (error.name === "ValidationError") {
     return res.status(400).send({
       success: false,
@@ -33,6 +35,7 @@ export const errorHandler = (
       status: error.status,
     });
   }
+
   return res.status(500).send({
     success: false,
     message: "Critical Error Occoured",

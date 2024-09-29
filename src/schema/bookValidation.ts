@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { authorSchema } from "./author-validation";
+import { authorSchema } from "./authorValidation";
 
 /**
  * @swagger
@@ -95,7 +95,7 @@ const createBookSchema = Joi.object({
  * Allows for partial updates and ensures the provided fields have the correct data types.
  */
 const updateBookSchema = Joi.object({
-  id: Joi.string().required().messages({
+  _id: Joi.string().required().messages({
     "any.required": "Book ID is required!",
     "string.empty": "Book ID cannot be empty!",
   }),
@@ -113,7 +113,7 @@ const updateBookSchema = Joi.object({
  * Ensures only the book id is provided.
  */
 const deleteBookSchema = Joi.object({
-  id: Joi.string().required().messages({
+  _id: Joi.string().required().messages({
     "any.required": "Book ID is required!",
     "string.empty": "Book ID cannot be empty!",
   }),

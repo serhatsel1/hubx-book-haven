@@ -1,116 +1,67 @@
-Book API Documentation
-This API allows you to manage a collection of books. You can perform CRUD operations (Create, Read, Update, Delete) on book entries.
+# Hubx-Book-Haven Projesi
 
-Base URL: http://localhost:8000/api/books
+Bu proje, Node.js, MongoDB, Express.js ve TypeScript kullanılarak oluşturulmuş bir REST API örneğidir. Proje, kitap bilgilerini depolamak ve yönetmek için bir API sağlar.
 
-API Endpoints
+## Özellikler
 
-1. Get All Books
+- Kitap ekleme, güncelleme, silme ve listeleme işlemleri.
+- Veri doğrulama için Joi kütüphanesi kullanımı.
+- Docker ile konteynerleştirme.
 
-Endpoint: /books
-Method: GET
-Description: Retrieves a list of all books with pagination.
-Query Parameters:
-page (optional): Page number for pagination (default: 1)
-limit (optional): Number of books per page (default: 10)
-Responses:
-200 OK: Returns a JSON object containing the list of books, total number of books, total pages, and current page.
-500 Internal Server Error: If an unexpected error occurs.
-Example Request:
+## Kurulum
 
-GET /books?page=2&limit=5 2. Create a New Book
+Bu projeyi çalıştırmak için Docker ve Docker Compose'un yüklü olması gerekmektedir.
 
-Endpoint: /books
-Method: POST
-Description: Creates a new book and adds it to the database.
-Request Body: A JSON object containing the book data:
-title (string, required): The title of the book.
-author (object, required): The author of the book.
-name (string, required): The author's name.
-country (string, required): The author's country.
-birthDate (string, required, date format): The author's birth date.
-price (number, required): The price of the book.
-isbn (string, required): The ISBN of the book.
-language (string, required): The language of the book.
-numberOfPages (number, required): The number of pages in the book.
-publisher (string, required): The publisher of the book.
-Responses:
-201 Created: Returns the created book data.
-400 Bad Request: If the book data is invalid or a book with the same title or ISBN already exists.
-500 Internal Server Error: If an unexpected error occurs.
-Example Request:
+1. Projeyi klonlayın:
 
-JSON
-POST /books
-{
-"title": "The Lord of the Rings",
-"author": {
-"name": "J.R.R. Tolkien",
-"country": "United Kingdom",
-"birthDate": "1892-01-03"
-},
-"price": 25.00,
-"isbn": "9780618260264",
-"language": "English",
-"numberOfPages": 1216,
-"publisher": "Allen & Unwin"
-}
-Kodu dikkatli kullanın.
+```bash
+git clone https://github.com/serhatsel1/hubx-book-haven.git
+```
 
-3. Update a Book
+2. Proje dizinine gidin:
 
-Endpoint: /books/:id
-Method: PUT
-Description: Updates an existing book by ID.
-Request Parameters:
-id (string, required): The ID of the book to update.
-Request Body: A JSON object containing the updated book data (all fields are optional).
-Responses:
-200 OK: Returns the updated book data.
-400 Bad Request: If the book data is invalid.
-404 Not Found: If the book with the given ID is not found.
-500 Internal Server Error: If an unexpected error occurs.
-Example Request:
+```bash
+cd hubx-book-haven
+```
 
-JSON
-PUT /books/6437f32a68078a479685a2f6
-{
-"title": "The Hobbit",
-"price": 15.00
-}
-Kodu dikkatli kullanın.
+3. Docker Compose ile uygulamayı başlatın
 
-4. Delete a Book
+```bash
+docker-compose up -d
+```
 
-Endpoint: /books/:id
-Method: DELETE
-Description: Deletes a book by ID.
-Request Parameters:
-id (string, required): The ID of the book to delete.
-Responses:
-200 OK: If the book was deleted successfully.
-404 Not Found: If the book with the given ID is not found.
-500 Internal Server Error: If an unexpected error occurs.
-Example Request:
+Bu komut, Docker imajını oluşturacak ve uygulamayı arka planda çalıştıracaktır.
 
-DELETE /books/6437f32a68078a479685a2f6
-Error Handling
-The API uses a centralized error handling mechanism. If an error occurs, the API will return a JSON response with the following structure:
+Kullanım
+Uygulama, http://localhost:3000 adresinde erişilebilir olacaktır.
 
-JSON
-{
-"message": "Error message",
-"status": "HTTP status code"
-}
-Kodu dikkatli kullanın.
+## API Dokümantasyonu
 
-Example Error Response:
+API dokümantasyonuna http://localhost:3000/api-docs adresinden erişebilirsiniz. Swagger UI kullanarak API'yi keşfedebilir ve test edebilirsiniz.
 
-JSON
-{
-"message": "Book not found",
-"status": 404
-}
-Kodu dikkatli kullanın.
+## Geliştirme
 
-This documentation provides a comprehensive overview of the Book API, including its endpoints, request/response formats, and error handling. It should be sufficient for developers to understand and interact with the API.
+Geliştirme ortamında çalıştırmak için aşağıdaki komutu kullanabilirsiniz:
+
+```bash
+docker-compose up
+```
+
+Bu komut, uygulamayı ön planda çalıştıracak ve logları konsolda görüntüleyecektir.
+
+## Test
+
+Testleri çalıştırmak için aşağıdaki komutu kullanabilirsiniz:
+
+```bash
+docker-compose run app npm run test
+```
+
+## Teknolojiler
+* Node.js
+* MongoDB
+* Express.js
+* TypeScript
+* Joi
+* Docker
+* Docker Compose

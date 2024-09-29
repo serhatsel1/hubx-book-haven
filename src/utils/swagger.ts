@@ -24,12 +24,14 @@ const options: swaggerJSDoc.Options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 function swaggerDocs(app: Express, port: number) {
+
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   app.get("/docs.json", (req: Request, res: Response) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerSpec);
   });
+  
   log.info(`Swagger.json is ready at http://localhost:${port}/api-docs`);
 }
 

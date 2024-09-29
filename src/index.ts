@@ -1,6 +1,5 @@
 import express, { urlencoded, json } from "express";
 import dotenv from "dotenv";
-import DbConnection from "./db/DbConnection";
 import cors from "cors";
 import bodyParser from "body-parser";
 
@@ -8,7 +7,8 @@ import { indexRouter } from "./routes/indexRouter";
 
 import swaggerDocs from "./utils/swagger";
 import log from "./utils/logger";
-import { errorHandler } from "./errors/ErrorHandler";
+import { errorHandler } from "./errors/errorHandler";
+import DbConnection from "./db/dbConnection";
 
 dotenv.config();
 

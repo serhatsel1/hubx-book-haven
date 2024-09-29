@@ -1,4 +1,4 @@
-import { ErrorType } from "../types/ErrorTypes";
+import { ErrorType } from "../types/errorTypes";
 
 /**
  * A collection of predefined error types for client and server errors.
@@ -27,6 +27,16 @@ const ErrorTypes: {
     BOOK_ALREADY_EXISTS: {
       status: 400,
       message: "A book with this title already exists.",
+    },
+
+    BOOK_INVALID_ID: {
+      message: "Invalid book ID format",
+      status: 400,
+    },
+
+    BOOK_NOT_FOUND_ID: {
+      message: "Book not found with the given ID",
+      status: 404,
     },
 
     ISBN_ALREADY_EXISTS: {

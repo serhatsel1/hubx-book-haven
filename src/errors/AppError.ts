@@ -1,4 +1,4 @@
-import { AppErrorOptions } from "../types/ErrorTypes";
+import { AppErrorOptions } from "../types/errorTypes";
 
 /**
  * Custom Error class for handling application-specific errors.
