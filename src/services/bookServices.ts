@@ -41,12 +41,12 @@ export const getAllBooksService = async ({ page, limit }: PaginationParams) => {
 /**
  * Creates a new book.
  *
- * @param {CreateBookInput} input - The book data to create.
+ * @param {CreateBookInput} bookData - The book data to create.
  * @returns {Promise<object>} A promise that resolves to an object containing the created book data.
- * @throws {AppError} If the input data is invalid or a book with the same title or ISBN already exists.
+ * @throws {AppError} If the bookData data is invalid or a book with the same title or ISBN already exists.
  */
-export const createBookService = async (input: CreateBookInput) => {
-  const { error } = createBookSchema.validate(input);
+export const createBookService = async (bookData: CreateBookInput) => {
+  const { error } = createBookSchema.validate(bookData);
 
   if (error) {
     throw new AppError({
@@ -55,28 +55,28 @@ export const createBookService = async (input: CreateBookInput) => {
     });
   }
 
-  const existingBook = await BookBase.findOne({ title: input.title });
+  const existingBook = await BookBase.findOne({ title: bookData.title });
 
   if (existingBook) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_ALREADY_EXISTS);
   }
 
-  const existingISBN = await BookBase.findOne({ isbn: input.isbn });
+  const existingISBN = await BookBase.findOne({ isbn: bookData.isbn });
 
   if (existingISBN) {
     throw new AppError(ErrorTypes.ClientErrors.ISBN_ALREADY_EXISTS);
   }
   //@@@@@
   const authorProfile = new AuthorBaseModel({
-    name: input.author.name,
-    country: input.author.country,
-    birthDate: new Date(input.author.birthDate),
+    name: bookData.author.name,
+    country: bookData.author.country,
+    birthDate: new Date(bookData.author.birthDate),
   });
 
   await authorProfile.save();
 
   const book = new BookBase({
-    ...input,
+    ...bookData,
     author: authorProfile._id,
   });
   await book.save();
@@ -89,30 +89,30 @@ export const createBookService = async (input: CreateBookInput) => {
 /**
  * Updates an existing book.
  *
- * @param {UpdateBookInput} input - The book data to update.
+ * @param {UpdateBookInput} bookData - The book data to update.
  * @returns {Promise<object>} A promise that resolves to an object containing the updated book data.
- * @throws {AppError} If the input data is invalid or the book is not found.
+ * @throws {AppError} If the bookData data is invalid or the book is not found.
  */
-export const updateBookService = async (input: UpdateBookInput) => {
-  if (!Types.ObjectId.isValid(input.id)) {
+export const updateBookService = async (bookData: UpdateBookInput) => {
+  if (!Types.ObjectId.isValid(bookData.id)) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
   }
 
-  const existingBook = await BookBase.findById(input.id);
+  const existingBook = await BookBase.findById(bookData.id);
   if (!existingBook) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_NOT_FOUND_ID);
   }
 
   const existingBookWithSameTitle = await BookBase.exists({
-    _id: { $ne: input.id },
-    title: input.title,
+    _id: { $ne: bookData.id },
+    title: bookData.title,
   });
 
   if (existingBookWithSameTitle) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_ALREADY_EXISTS);
   }
 
-  const { error } = updateBookSchema.validate(input);
+  const { error } = updateBookSchema.validate(bookData);
 
   if (error) {
     throw new AppError({
@@ -121,7 +121,7 @@ export const updateBookService = async (input: UpdateBookInput) => {
     });
   }
 
-  const book = await BookBase.findOneAndUpdate({ _id: input.id }, input, {
+  const book = await BookBase.findOneAndUpdate({ _id: bookData.id }, bookData, {
     new: true,
   });
 
@@ -135,16 +135,17 @@ export const updateBookService = async (input: UpdateBookInput) => {
 /**
  * Deletes a book.
  *
- * @param {DeleteBookInput} input - The book id to delete.
+ * @param {DeleteBookInput} bookData - The book id to delete.
  * @returns {Promise<object>} A promise that resolves to an object indicating success or failure.
  * @throws {AppError} If the book is not found.
  */
-export const deleteBookService = async (input: DeleteBookInput) => {
-  const { id } = input;
+export const deleteBookService = async (bookData: DeleteBookInput) => {
+  const { id } = bookData;
   const { error } = deleteBookSchema.validate({ id });
 
+  console.log("id", id);
   //@@@@
-  if (!Types.ObjectId.isValid(input.id)) {
+  if (!Types.ObjectId.isValid(bookData.id)) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
   }
 
