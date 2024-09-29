@@ -112,7 +112,7 @@ The folder structure of this app is explained below:
     },
   }
 
-```
+``` 
 ## Testing
 This project uses Jest as its testing framework. Jest is a JavaScript testing framework that provides a comprehensive and easy-to-use solution for testing JavaScript code, including TypeScript.
 
