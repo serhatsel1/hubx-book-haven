@@ -57,23 +57,6 @@ This command will build the Docker image and run the application in the backgrou
 
   swagger Spec Endpoint : http://localhost:3000/api-docs 
 
-## Development
-
-You can use the following command to run in development environment:
-
-```bash
-docker-compose up
-```
-
-This command will run the application in the foreground and display the logs in the console.
-
-## Test
-
-You can use the following command to run the tests:
-
-```bash
-docker-compose run app npm run test
-```
 ## Data flow
 ![](./diagram/data-flow.png)
 
@@ -96,8 +79,8 @@ The folder structure of this app is explained below:
 | **src/services**      | This folder contains the core business logic for managing books. It interacts with the database models and schemas to perform CRUD operations and other book-related tasks. |
 | **src/tests**      | This folder contains unit and integration tests for the application. |
 | **src/types**      | This folder contains TypeScript type definitions used throughout the application. |
-| **src**/index.ts         | Entry point to express app                                                               |
-| package.json             | Contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)   | tsconfig.json            | Config settings for compiling source code only written in TypeScript    
+| **src/index.ts**         | Entry point to express app                                                               |
+| **package.json**             | Contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)   | tsconfig.json            | Config settings for compiling source code only written in TypeScript    
 ## Building the project
 ### Configuring TypeScript compilation
 ```json

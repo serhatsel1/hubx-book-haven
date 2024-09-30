@@ -66,14 +66,21 @@ export const createBookService = async (bookData: CreateBookInput) => {
   if (existingISBN) {
     throw new AppError(ErrorTypes.ClientErrors.ISBN_ALREADY_EXISTS);
   }
-  //@@@@@
-  const authorProfile = new AuthorBaseModel({
+
+  let authorProfile = await AuthorBaseModel.findOne({
     name: bookData.author.name,
     country: bookData.author.country,
     birthDate: new Date(bookData.author.birthDate),
   });
 
-  await authorProfile.save();
+  if (!authorProfile) {
+    authorProfile = new AuthorBaseModel({
+      name: bookData.author.name,
+      country: bookData.author.country,
+      birthDate: new Date(bookData.author.birthDate),
+    });
+    await authorProfile.save();
+  }
 
   const book = new BookBase({
     ...bookData,
@@ -143,8 +150,6 @@ export const deleteBookService = async (bookData: DeleteBookInput) => {
   const { id } = bookData;
   const { error } = deleteBookSchema.validate({ id });
 
-  console.log("id", id);
-  //@@@@
   if (!Types.ObjectId.isValid(bookData.id)) {
     throw new AppError(ErrorTypes.ClientErrors.BOOK_INVALID_ID);
   }
@@ -165,7 +170,6 @@ export const deleteBookService = async (bookData: DeleteBookInput) => {
   return { success: true, data: book };
 };
 
-// Exporting services
 export default {
   getAllBooksService,
   createBookService,

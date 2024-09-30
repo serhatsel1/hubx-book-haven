@@ -1,12 +1,12 @@
 import mongoose, { Schema } from "mongoose";
-import { IBook } from "../types/bookTypes";
 import DbConnection from "../db/dbConnection";
+import { BookData } from "../types/bookTypes";
 
 /**
  * Mongoose schema for the BookBase model.
  * Defines the structure and data types for book documents.
  */
-const BookBaseSchema = new Schema<IBook>(
+const BookBaseSchema = new Schema<BookData>(
   {
     title: {
       type: String,
@@ -14,8 +14,8 @@ const BookBaseSchema = new Schema<IBook>(
       unique: true,
     },
     author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AuthorBase", // Reference to the Author model
+      type: mongoose.Schema.Types.Mixed,
+      ref: "AuthorBase",
       required: true,
     },
     price: {
@@ -46,7 +46,7 @@ const BookBaseSchema = new Schema<IBook>(
  * Mongoose model for the BookBase collection.
  * Provides an interface for interacting with book documents in the database.
  */
-export const BookBaseModel = DbConnection.model<IBook>(
+export const BookBaseModel = DbConnection.model<BookData>(
   "BookBase",
   BookBaseSchema
 );
